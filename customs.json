@@ -1,0 +1,12 @@
+{
+    "elements": {},
+    "attributes": {
+        "th:text": {},
+        "th:fragment": {},
+        "th:utext": {},
+        "version": {
+            "context": "head"
+        },
+        "th:attr": {}
+    }
+}

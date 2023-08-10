@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<head version="1.0" xmlns:th="http://www.w3.org/1999/xhtml">
+<div th:fragment="control_entradas" style="display: inline-block;padding: 3px;${style_fragmento_tex}"><label>
+    <div th:attr="${atributos_error_tex}"
+        th:style="${style_mensaje_error_tex}"
+        th:utext="${mensaje_error_tex}"></div>
+    <span th:text="${mensaje_de_captura_tex}"
+        th:style="${style_mensaje_de_captura_tex}"></span>
+    <input step="any"
+        th:type="${control_tipo_tex}"
+        th:id="${id_tex}"
+        th:name="${clave_tex}"
+        th:value="${valor_tex}"
+        th:attr="${atributos_tex}"
+        th:style="background:lightsteelblue;${style_tex}"
+        th:text="${contenido_input_tex}"></input></label></div>
+<div th:fragment="control_redirecciones" style="display: inline-block;padding: 3px;${style_fragmento_tex}"><label>
+    <div th:attr="${atributos_error_tex}"
+         th:style="${style_mensaje_error_tex}"
+         th:utext="${mensaje_error_tex}"></div>
+    <span th:text="${mensaje_de_captura_tex}"
+        th:style="${style_mensaje_de_captura_tex}"></span>
+    <input step="any"
+           th:type="${control_tipo_tex}"
+           th:id="${id_tex}"
+           th:name="${clave_tex}"
+           th:value="${valor_tex}"
+           th:attr="${atributos_tex}"
+           th:style="${style_tex}"
+           th:text="${contenido_input_tex}"
+           th:onclick="javascript:window.location='${url_destino_tex}';"></input></label></div>
+<div th:fragment="control_selecciones" style="padding: 3px;${style_fragmento_tex}"><label>
+    <div th:attr="${atributos_error_tex}"
+        th:style="${style_mensaje_error_tex}"
+        th:utext="${mensaje_error_tex}"></div>        
+    <span th:text="${mensaje_de_captura_tex}"
+        th:style="${style_mensaje_de_captura_tex}"></span>
+    <select th:id="${id_tex}"
+        th:name="${clave_tex}"
+        th:attr="${atributos_tex}"
+        th:style="${style_tex}"
+        th:utext="${contenido_tex}"></select></label></div>
+<div th:fragment="fragmento_texto" 
+    th:style="${style_tex}height:auto;"
+    th:attr="${atributos_tex}">
+      <span th:utext="${mensaje_de_captura_tex}"
+        th:style="${style_mensaje_de_captura_tex}"></span>
+      <span th:utext="${mensaje_tex_0}"
+        th:style="${style_mensaje_de_captura_tex}"></span>
+      <span th:utext="${mensaje_tex_1}"
+        th:style="${style_mensaje_de_captura_tex}"></span>
+</div>
+</head>
