@@ -239,6 +239,7 @@ public class Operaciones_con_properties_navegador_web extends Navegador_web {
                             break;
                         } 
                         if (ok.es == false) {
+                            Operaciones_con_properties_navegador_web.this.i_escritura.escribir_linea_error(ok.txt, new oks());
                             String html_tex = operaciones_con_properties_web.capturar_formulario(operaciones_con_properties_web.error_formulario
                               , null, "", ok, extras_array);
                             if (ok.es == false) { ref_ok.set(ok); return; }
@@ -257,6 +258,7 @@ public class Operaciones_con_properties_navegador_web extends Navegador_web {
                         }
                     } catch (Exception e) {
                         ok.setTxt(e);
+                        Operaciones_con_properties_navegador_web.this.i_escritura.escribir_linea_error(ok.txt, new oks());
                     } finally {
                         ref_ok.set(ok);
                     }
@@ -322,6 +324,7 @@ public class Operaciones_con_properties_navegador_web extends Navegador_web {
                                 _contenedor_principalController.inicio_boton.setVisible(true);
                                 // webview_simpleController_implementacion.presentar_contenido(url.toURI(), ok, extras_array);
                             } else {
+                                Operaciones_con_properties_navegador_web.this.i_escritura.escribir_linea_error(ok.txt, new oks());
                                 String texto = ok.getTxt();
                                 ok.iniciar();
                                 poner_error(texto, ok);
@@ -371,6 +374,7 @@ public class Operaciones_con_properties_navegador_web extends Navegador_web {
                             ocultar_mensaje_dialogo(ok);
                         } catch (Exception e_ignorar) {}
                         ok.setTxt(e);
+                        Operaciones_con_properties_navegador_web.this.i_escritura.escribir_linea_error(ok.txt, new oks());
                     } finally {
                         ref_ok.set(ok);
                     }

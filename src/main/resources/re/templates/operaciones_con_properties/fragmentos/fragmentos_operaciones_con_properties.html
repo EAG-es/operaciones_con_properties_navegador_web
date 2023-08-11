@@ -51,4 +51,17 @@
       <span th:utext="${mensaje_tex_1}"
         th:style="${style_mensaje_de_captura_tex}"></span>
 </div>
+<div th:fragment="control_textareas"
+    th:style="${style_fragmento_tex}"><label>
+    <div th:attr="${atributos_error_tex}"
+        th:style="${style_mensaje_error_tex}"
+        th:utext="${mensaje_error_tex}"></div>        
+    <span th:text="${mensaje_de_captura_tex}"
+        th:style="${style_mensaje_de_captura_tex}"></span>
+    <textarea th:id="${id_tex}"
+        th:name="${clave_tex}"
+        th:attr="${atributos_tex}"
+        th:style="${style_tex}heigth:auto;"
+        th:text="${valor_tex}"></textarea></label>
+</div>
 </head>

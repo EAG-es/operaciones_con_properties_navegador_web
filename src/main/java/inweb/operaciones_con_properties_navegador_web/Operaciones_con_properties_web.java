@@ -2,6 +2,8 @@ package inweb.operaciones_con_properties_navegador_web;
 
 import static inclui.formularios.control_entradas.k_entradas_tipo_archivo;
 import static inclui.formularios.control_entradas.k_entradas_tipo_boton;
+import static inclui.formularios.control_entradas.k_entradas_tipo_checkbox;
+import static inclui.formularios.control_entradas.k_entradas_tipo_hidden;
 import static inclui.formularios.control_entradas.k_entradas_tipo_submit;
 import static inclui.formularios.control_entradas.k_entradas_tipo_texto;
 import static ingui.javafx.operaciones_con_properties_navegador_web.Operaciones_con_properties_navegador_web.k_imagen_cabecera_ruta;
@@ -22,18 +24,23 @@ import innui.operaciones_con_properties.operaciones_con_properties;
 import inweb.kaloria_wallet_navegador_web.navegador_web_peticiones;
 import inweb.modelos_html.formularios.control_entradas;
 import inweb.modelos_html.formularios.control_redirecciones;
+import inweb.modelos_html.formularios.control_textareas;
 import inweb.modelos_html.formularios.control_textos;
 import inweb.modelos_html.formularios.web_formularios;
 import static inweb.modelos_html.formularios.web_formularios.k_nombre_fragmento;
 import static inweb.modelos_html.formularios.web_formularios.k_valores_mapa_mensaje_error_tex;
+import static inweb.modelos_html.formularios.web_formularios.k_valores_mapa_valor_tex;
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 /**
  *
@@ -51,6 +58,7 @@ public class Operaciones_con_properties_web extends bases {
     public static String k_url_ruta_action_formulario_inicio = "/operaciones_con_properties/inicio";
     public static String k_url_ruta_action_formulario_buscar = "/operaciones_con_properties/buscar";
     public static String k_url_ruta_action_formulario_traducir = "/operaciones_con_properties/traducir";
+    public static String k_url_ruta_action_formulario_leer_traduccion = "/operaciones_con_properties/leer_traduccion";
     public static String k_valores_mapa_url_destino_tex = "url_destino_tex";
     public static String k_fragmentos_principales_ruta = "/re/templates/formularios/fragmentos/fragmentos_principales.html";
     public static String k_fragmentos_operaciones_con_properties_ruta = "/re/templates/operaciones_con_properties/fragmentos/fragmentos_operaciones_con_properties.html";
@@ -68,6 +76,11 @@ public class Operaciones_con_properties_web extends bases {
     public static String k_properties_errores_texto = "properties_errores_texto";
     public static String k_nombre_archivo = "nombre_archivo";
     public static String k_ruta_archivo = "ruta_archivo";
+    public static String k_leer_traduccion_traduccion = "leer_traduccion_traduccion";
+    public static String k_leer_traduccion_valor = "leer_traduccion_valor";
+    public static String k_leer_traduccion_clave = "leer_traduccion_clave";
+    public static String k_leer_traduccion_unicode = "leer_traduccion_unicode";
+    public static String k_separador = "///";
     public web_formularios wallet_formulario;
     public navegador_web_peticiones navegador_web_peticion = new navegador_web_peticiones();
     public web_formularios index_formulario;
@@ -76,6 +89,7 @@ public class Operaciones_con_properties_web extends bases {
     public web_formularios buscar_textos_formulario;
     public web_formularios properties_formulario;
     public web_formularios traducir_formulario;
+    public web_formularios leer_traduccion_formulario;
     public control_textos index_control_texto;
     public operaciones_con_properties operacion_con_propertie;
     public navegador_web_peticiones.i_navegador_web_peticiones inicio_i_navegador_web_peticiones
@@ -102,6 +116,15 @@ public class Operaciones_con_properties_web extends bases {
         public String procesar_peticion(URL url, LinkedHashMap<String, String> datos_mapa
                 , oks ok, Object... extras_array) throws Exception {
             return procesar_formulario_traducir(datos_mapa
+                    , convertir_a_lista(datos_mapa, ok), ok, extras_array);
+        }
+    };      
+    public navegador_web_peticiones.i_navegador_web_peticiones leer_traduccion_i_navegador_web_peticiones
+      = new navegador_web_peticiones.i_navegador_web_peticiones() {
+        @Override
+        public String procesar_peticion(URL url, LinkedHashMap<String, String> datos_mapa
+                , oks ok, Object... extras_array) throws Exception {
+            return procesar_formulario_leer_traduccion(datos_mapa
                     , convertir_a_lista(datos_mapa, ok), ok, extras_array);
         }
     };      
@@ -184,7 +207,7 @@ public class Operaciones_con_properties_web extends bases {
             opciones_mapa.put(k_nombre_fragmento, k_opciones_mapa_nombre_fragmento_html);
             Map<String, String> index_valores_mapa;
             index_valores_mapa = new HashMap<>();
-            index_valores_mapa.put(k_titulo_tex, tr.in(in, "Kaloria Wallet "));
+            index_valores_mapa.put(k_titulo_tex, tr.in(in, "Operaciones con properties "));
             index_valores_mapa.put(k_mensaje_imagen_tex, k_imagen_cabecera_ruta);
             URL imagen_url;
             imagen_url = Resources.getResource(k_imagen_cabecera_ruta);
@@ -221,7 +244,7 @@ public class Operaciones_con_properties_web extends bases {
             if (ok.es == false) { return false; }
             HashMap<String, Object> valores_mapa = new HashMap<>();
             valores_mapa.put(k_valores_mapa_url_destino_tex
-                    , k_url_protocolo_host + k_url_ruta_action_formulario_buscar);
+                    , k_url_protocolo_host + k_url_ruta_action_formulario_inicio);
             error_cancelar_control_entrada.poner_en_formulario(error_formulario, k_cancelar_boton
                     , valores_mapa, tr.in(in, "Inicio"), null, ok);
             if (ok.es == false) { return ok.es; }
@@ -338,6 +361,7 @@ public class Operaciones_con_properties_web extends bases {
     }
     /**
      * Crea el formulario de presentacion de properties
+     * @param es_ller_traduccion
      * @param properties_tex
      * @param errores_tex
      * @param ok
@@ -345,7 +369,7 @@ public class Operaciones_con_properties_web extends bases {
      * @return
      * @throws Exception
      */
-    public boolean crear_formulario_properties(String properties_tex
+    public boolean crear_formulario_properties(boolean es_ller_traduccion, String properties_tex
       , String errores_tex, oks ok, Object... extras_array) throws Exception {
         if (ok.es == false) { return false; }
         ResourceBundle in;
@@ -353,30 +377,35 @@ public class Operaciones_con_properties_web extends bases {
         try {
             properties_formulario = new web_formularios();
             properties_formulario.escritura = escritura;
-            control_entradas properties_cancelar_control_entrada = new control_redirecciones();
-            control_entradas properties_texto_control_entrada = new control_textos();
-            control_entradas properties_errores_texto_control_entrada = new control_textos();
-            properties_texto_control_entrada.iniciar(k_entradas_tipo_texto, ok);
+            control_entradas cancelar_control_entrada = new control_redirecciones();
+            control_entradas texto_control_entrada = new control_textos();
+            control_entradas errores_texto_control_entrada = new control_textos();
+            texto_control_entrada.iniciar(k_entradas_tipo_texto, ok);
             if (ok.es == false) { return false; }
-            properties_errores_texto_control_entrada.iniciar(k_entradas_tipo_texto, ok);
+            errores_texto_control_entrada.iniciar(k_entradas_tipo_texto, ok);
             if (ok.es == false) { return false; }
-            properties_cancelar_control_entrada.iniciar(k_entradas_tipo_boton, ok);
+            cancelar_control_entrada.iniciar(k_entradas_tipo_boton, ok);
             if (ok.es == false) { return false; }
             HashMap<String, Object> opciones_mapa = new HashMap<>();
             opciones_mapa.put(k_nombre_fragmento, k_fragmento_texto);
             HashMap<String, String> valores_mapa = new HashMap<>();
             valores_mapa.put(k_mensaje_tex_0, "");
             valores_mapa.put(k_mensaje_tex_1, "");
-            properties_texto_control_entrada.poner_en_formulario(properties_formulario, k_properties_texto
+            texto_control_entrada.poner_en_formulario(properties_formulario, k_properties_texto
               , valores_mapa, properties_tex, opciones_mapa, ok);
             if (ok.es == false) { return ok.es; }
-            properties_errores_texto_control_entrada.poner_en_formulario(properties_formulario, k_properties_errores_texto
+            errores_texto_control_entrada.poner_en_formulario(properties_formulario, k_properties_errores_texto
               , valores_mapa, errores_tex, opciones_mapa, ok);
             if (ok.es == false) { return ok.es; }
             valores_mapa = new HashMap<>();
-            valores_mapa.put(k_valores_mapa_url_destino_tex
+            if (es_ller_traduccion) {
+                valores_mapa.put(k_valores_mapa_url_destino_tex
+                    , k_url_protocolo_host + k_url_ruta_action_formulario_leer_traduccion);
+            } else {
+                valores_mapa.put(k_valores_mapa_url_destino_tex
                     , k_url_protocolo_host + k_url_ruta_action_formulario_buscar);
-            properties_cancelar_control_entrada.poner_en_formulario(properties_formulario, k_cancelar_boton
+            }
+            cancelar_control_entrada.poner_en_formulario(properties_formulario, k_cancelar_boton
                     , valores_mapa, tr.in(in, "Cancelar"), null, ok);
             if (ok.es == false) { return ok.es; }
         } catch (Exception e) {
@@ -438,7 +467,7 @@ public class Operaciones_con_properties_web extends bases {
                           + entry.getValue()
                           + "<BR>";
                     }
-                    crear_formulario_properties(properties_tex, properties_error_tex, ok);
+                    crear_formulario_properties(false, properties_tex, properties_error_tex, ok);
                     if (ok.es == false) { return null; }
                     properties_formulario.valores_mapa.put(k_valores_mapa_mensaje_error_tex, mensaje);
                     retorno = capturar_formulario(properties_formulario
@@ -503,32 +532,103 @@ public class Operaciones_con_properties_web extends bases {
             traducir_formulario.escritura = escritura;
             navegador_web_peticion.url_inicios_mapa.put(k_url_ruta_action_formulario_traducir
               , traducir_i_navegador_web_peticiones);
-            control_entradas importar_archivo_nombre_control_entrada = new control_entradas();
-            control_entradas importar_archivo_ruta_control_entrada = new control_entradas();
-            control_entradas importar_archivo_wallet_cancelar_control_entrada = new control_redirecciones();;
-            control_entradas importar_archivo_wallet_confirmar_control_entrada = new control_entradas();
-            importar_archivo_nombre_control_entrada.iniciar(k_entradas_tipo_archivo, ok);
+            control_entradas nombre_control_entrada = new control_entradas();
+            control_entradas ruta_control_entrada = new control_entradas();
+            control_entradas cancelar_control_entrada = new control_redirecciones();;
+            control_entradas confirmar_control_entrada = new control_entradas();
+            nombre_control_entrada.iniciar(k_entradas_tipo_archivo, ok);
             if (ok.es == false) { return false; }
-            importar_archivo_ruta_control_entrada.iniciar(k_entradas_tipo_texto, ok);
+            ruta_control_entrada.iniciar(k_entradas_tipo_texto, ok);
             if (ok.es == false) { return false; }
-            importar_archivo_wallet_cancelar_control_entrada.iniciar(k_entradas_tipo_boton, ok);
+            cancelar_control_entrada.iniciar(k_entradas_tipo_boton, ok);
             if (ok.es == false) { return false; }
-            importar_archivo_wallet_confirmar_control_entrada.iniciar(k_entradas_tipo_submit, ok);
+            confirmar_control_entrada.iniciar(k_entradas_tipo_submit, ok);
             if (ok.es == false) { return false; }
-            importar_archivo_nombre_control_entrada.poner_en_formulario(traducir_formulario, k_nombre_archivo
+            nombre_control_entrada.poner_en_formulario(traducir_formulario, k_nombre_archivo
                     , null, tr.in(in, "Seleccione el archivo de propiedades que traducir. "), null, ok);
             if (ok.es == false) { return ok.es; }
-            importar_archivo_ruta_control_entrada.poner_en_formulario(traducir_formulario, k_ruta_archivo
+            ruta_control_entrada.poner_en_formulario(traducir_formulario, k_ruta_archivo
                     , null, tr.in(in, "Escriba la ruta del archivo. "), null, ok);
             if (ok.es == false) { return ok.es; }
             Map<String, String> valores_mapa = new HashMap<>();
             valores_mapa.put(k_valores_mapa_url_destino_tex
-                    , k_url_protocolo_host + k_url_ruta_action_formulario_traducir);
-            importar_archivo_wallet_cancelar_control_entrada.poner_en_formulario(traducir_formulario, k_cancelar_boton
+                    , k_url_protocolo_host + k_url_ruta_action_formulario_inicio);
+            cancelar_control_entrada.poner_en_formulario(traducir_formulario, k_cancelar_boton
                     , valores_mapa, tr.in(in, "Cancelar"), null, ok);
             if (ok.es == false) { return ok.es; }
-            importar_archivo_wallet_confirmar_control_entrada.poner_en_formulario(traducir_formulario, k_enviar_boton
+            confirmar_control_entrada.poner_en_formulario(traducir_formulario, k_enviar_boton
                     , null, tr.in(in, "Enviar"), null, ok);
+            if (ok.es == false) { return ok.es; }
+        } catch (Exception e) {
+            ok.setTxt(e);
+        }
+        return ok.es;
+    }
+    /**
+     * Crea el formulario de importación de wallet desde archivo de credenciales
+     * @param claves_properties_tex
+     * @param valores_properties_tex
+     * @param ok
+     * @param extras_array
+     * @return
+     * @throws Exception
+     */
+    public boolean crear_formulario_leer_traduccion(String claves_properties_tex
+      , String valores_properties_tex, oks ok, Object... extras_array) throws Exception {
+        if (ok.es == false) { return false; }
+        ResourceBundle in;
+        in = ResourceBundles.getBundle(k_in_ruta);
+        try {
+            leer_traduccion_formulario = new web_formularios();
+            leer_traduccion_formulario.escritura = escritura;
+            navegador_web_peticion.url_inicios_mapa.put(k_url_ruta_action_formulario_leer_traduccion
+              , leer_traduccion_i_navegador_web_peticiones);
+            control_entradas cancelar_control_entrada = new control_redirecciones();;
+            control_entradas confirmar_control_entrada = new control_entradas();
+            control_entradas claves_control_entrada = new control_entradas();
+            control_entradas unicode_control_entrada = new control_entradas();
+            control_entradas valores_control_entrada = new control_textos();
+            control_textareas traducciones_control_textarea = new control_textareas();
+            cancelar_control_entrada.iniciar(k_entradas_tipo_boton, ok);
+            if (ok.es == false) { return false; }
+            confirmar_control_entrada.iniciar(k_entradas_tipo_submit, ok);
+            if (ok.es == false) { return false; }
+            claves_control_entrada.iniciar(k_entradas_tipo_hidden, ok);
+            if (ok.es == false) { return false; }
+            valores_control_entrada.iniciar(k_entradas_tipo_texto, ok);
+            if (ok.es == false) { return false; }
+            traducciones_control_textarea.iniciar(k_entradas_tipo_texto, ok);
+            if (ok.es == false) { return false; }
+            unicode_control_entrada.iniciar(k_entradas_tipo_checkbox, ok);
+            if (ok.es == false) { return false; }
+            HashMap<String, Object> opciones_mapa = new HashMap<>();
+            opciones_mapa.put(k_nombre_fragmento, k_fragmento_texto);
+            Map<String, String> valores_mapa = new HashMap<>();
+            valores_mapa.put(k_mensaje_tex_0, valores_properties_tex);
+            valores_mapa.put(k_mensaje_tex_1, "");
+            valores_control_entrada.poner_en_formulario(leer_traduccion_formulario, k_leer_traduccion_valor
+              , valores_mapa, "Textos que traducir: <br>", opciones_mapa, ok);
+            if (ok.es == false) { return ok.es; }
+            traducciones_control_textarea.poner_en_formulario(leer_traduccion_formulario, k_leer_traduccion_traduccion
+                    , null, tr.in(in, "Traduccion: "), null, ok);
+            if (ok.es == false) { return ok.es; }
+            unicode_control_entrada.poner_en_formulario(leer_traduccion_formulario, k_leer_traduccion_unicode
+                    , null, tr.in(in, "Convertir a \\u0F0F (unicode)"), null, ok);
+            if (ok.es == false) { return ok.es; }
+            valores_mapa = new HashMap<>();
+            valores_mapa.put(k_valores_mapa_url_destino_tex
+                    , k_url_protocolo_host + k_url_ruta_action_formulario_traducir);
+            cancelar_control_entrada.poner_en_formulario(leer_traduccion_formulario, k_cancelar_boton
+                    , valores_mapa, tr.in(in, "Cancelar"), null, ok);
+            if (ok.es == false) { return ok.es; }
+            confirmar_control_entrada.poner_en_formulario(leer_traduccion_formulario, k_enviar_boton
+                    , null, tr.in(in, "Enviar"), null, ok);
+            if (ok.es == false) { return ok.es; }
+            valores_mapa = new HashMap<>();
+            valores_mapa.put(k_valores_mapa_valor_tex
+                    , claves_properties_tex);
+            claves_control_entrada.poner_en_formulario(leer_traduccion_formulario, k_leer_traduccion_clave
+                    , valores_mapa, "", null, ok);
             if (ok.es == false) { return ok.es; }
         } catch (Exception e) {
             ok.setTxt(e);
@@ -586,7 +686,25 @@ public class Operaciones_con_properties_web extends bases {
                         retorno = capturar_formulario(traducir_formulario
                           , null, k_url_ruta_action_formulario_traducir, ok, extras_array);
                     } else {
-                        mensaje = tr.in(in, "Operación realizada. ");
+                        Properties properties;
+                        properties = new Properties();
+                        FileInputStream fileInputStream;
+                        fileInputStream = new FileInputStream(file);
+                        properties.load(fileInputStream);
+                        TreeMap<String, String> properties_mapa = new TreeMap<>();
+                        for (Entry<Object, Object> entry: properties.entrySet()) {
+                            properties_mapa.put(entry.getKey().toString(), entry.getValue().toString());
+                        }
+                        String claves_texto = "";
+                        String valores_texto = "";
+                        for (Entry<String, String> entry: properties_mapa.entrySet()) {
+                            claves_texto = claves_texto + k_separador + entry.getKey() + k_separador;
+                            valores_texto = valores_texto + k_separador + entry.getValue() + k_separador + "<br>";
+                        }
+                        crear_formulario_leer_traduccion(claves_texto, valores_texto, ok);
+                        if (ok.es == false) { return null; }
+                        retorno = capturar_formulario(leer_traduccion_formulario
+                          , null, k_url_ruta_action_formulario_leer_traduccion, ok, extras_array);
                     }
                 }
             } else {
@@ -599,5 +717,99 @@ public class Operaciones_con_properties_web extends bases {
         }
         return retorno;
     }
-    
+    /**
+     * Procesa la petición recibida desde el formulario
+     * @param valores_mapa
+     * @param clave_valor_lista
+     * @param ok
+     * @param extras_array
+     * @return
+     * @throws Exception
+     */
+    public String procesar_formulario_leer_traduccion(Map<String
+            , String> valores_mapa, List<Map.Entry<String, Object>> clave_valor_lista
+            , oks ok, Object... extras_array) throws Exception {
+        if (ok.es == false) { return null; }
+        String retorno = null;
+        try {
+            ResourceBundle in;
+            String mensaje;
+            in = ResourceBundles.getBundle(k_in_ruta);
+            leer_traduccion_formulario.importar_valores(clave_valor_lista, ok);
+            if (ok.es == false) {
+                if (ok.id.equals(k_importar_no_encontrado)) {
+                    ok.iniciar();
+                } else {
+                    return null;
+                }
+            }
+            if (valores_mapa.get(k_enviar_boton) != null) {
+                leer_traduccion_formulario.procesar(ok, extras_array);
+                if (ok.es == false) { return null; }
+                String error_tex = leer_traduccion_formulario.valores_mapa.get(k_valores_mapa_mensaje_error_tex);
+                if (error_tex.isEmpty() == false) {
+                    retorno = capturar_formulario(leer_traduccion_formulario
+                      , null, k_url_ruta_action_formulario_leer_traduccion, ok, extras_array);
+                    if (ok.es == false) { return null; }
+                } else {
+                    leer_traduccion_formulario.valores_mapa.put(k_valores_mapa_mensaje_error_tex, "");
+                    String traduccion_tex = valores_mapa.get(k_leer_traduccion_traduccion);
+                    String claves_tex = valores_mapa.get(k_leer_traduccion_clave);
+                    claves_tex = claves_tex.replace(k_separador + k_separador, k_separador);
+                    String [] claves_array = claves_tex.split(k_separador);
+                    traduccion_tex = traduccion_tex.replace(k_separador + "\r\n", k_separador);
+                    traduccion_tex = traduccion_tex.replace(k_separador + k_separador, k_separador);
+                    String [] traducciones_array = traduccion_tex.split(k_separador);
+                    String texto = "";
+                    if (claves_array.length != traducciones_array.length) {
+                        ok.setTxt(tr.in(in, "No coinciden la líneas de textos traducidos con las de los textos que traducir. "));
+                        return null;
+                    }
+                    int i = 0;
+                    int tam = claves_array.length;
+                    String clave;
+                    String valor;
+                    String hex_tex;
+                    while (true) {
+                        if (i >= tam) {
+                            break;
+                        }
+                        if (claves_array[i].trim().isEmpty() == false) {
+                            if (valores_mapa.get(k_leer_traduccion_unicode) != null) {
+                                valor = "";
+                                for (char letra: traducciones_array[i].toCharArray()) {
+                                    hex_tex = Integer.toHexString(letra);
+                                    while (hex_tex.length() < 4) {
+                                        hex_tex = "0" + hex_tex;
+                                    }
+                                    valor = valor + "\\u" + hex_tex;
+                                }
+                            } else {
+                                valor = traducciones_array[i];
+                            }
+                            clave = claves_array[i];
+                            clave = clave.replace(" ", "\\ ");
+                            clave = clave.replace(":", "\\:");
+                            clave = clave.replace("=", "\\=");
+                            texto = texto 
+                              + clave + "=" 
+                              +  valor + "<br>";
+                        }
+                        i = i + 1;
+                    }
+                    crear_formulario_properties(true, texto, "", ok);
+                    if (ok.es == false) { return null; }
+                    retorno = capturar_formulario(properties_formulario
+                      , null, k_url_ruta_action_formulario_leer_traduccion, ok, extras_array);
+                }
+            } else {
+                retorno = capturar_formulario(leer_traduccion_formulario
+                  , null, k_url_ruta_action_formulario_leer_traduccion, ok, extras_array);
+                if (ok.es == false) { return null; }
+            }
+        } catch (Exception e) {
+            ok.setTxt(e);
+        }
+        return retorno;
+    }
 }
