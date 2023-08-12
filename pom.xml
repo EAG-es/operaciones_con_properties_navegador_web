@@ -30,7 +30,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>ingui.javafx.kaloria_wallet_navegador_web.Kaloria_wallet_navegador_web</mainClass>
+                            <mainClass>ingui.javafx.operaciones_con_properties_navegador_web.Operaciones_con_properties_navegador_web</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
