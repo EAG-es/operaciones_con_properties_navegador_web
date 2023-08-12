@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -53,7 +54,7 @@ public class operaciones_con_properties extends bases {
      * @throws Exception 
      */
     public boolean buscar_texto_tr_in_en_ruta(String ruta
-      , LinkedHashMap<String, String> properties_mapa
+      , Map<String, String> properties_mapa
       , oks ok, Object... extras_array) throws Exception {
         if (ok.es == false) { return false; }
         ResourceBundle in;
@@ -94,7 +95,7 @@ public class operaciones_con_properties extends bases {
      * @throws Exception 
      */
     public boolean _buscar_literal_en_archivo_tras_marca(File file
-      , String marca, LinkedHashMap<String, String> properties_mapa
+      , String marca, Map<String, String> properties_mapa
       , oks ok, Object... extras_array) throws Exception {
         if (ok.es == false) { return false; }
         ResourceBundle in;

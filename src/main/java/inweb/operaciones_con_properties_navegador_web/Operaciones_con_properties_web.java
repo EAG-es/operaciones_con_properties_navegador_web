@@ -450,7 +450,7 @@ public class Operaciones_con_properties_web extends bases {
                 } else {
                     buscar_textos_formulario.valores_mapa.put(k_valores_mapa_mensaje_error_tex, "");
                     String ruta = valores_mapa.get(k_ruta_carpeta);
-                    LinkedHashMap<String, String> properties_mapa = new LinkedHashMap<>();
+                    Map<String, String> properties_mapa = new TreeMap<>();
                     operacion_con_propertie.buscar_texto_tr_in_en_ruta(ruta
                       , properties_mapa, ok, extras_array);
                     String properties_tex = "";
@@ -697,9 +697,14 @@ public class Operaciones_con_properties_web extends bases {
                         }
                         String claves_texto = "";
                         String valores_texto = "";
+                        String texto;
                         for (Entry<String, String> entry: properties_mapa.entrySet()) {
                             claves_texto = claves_texto + k_separador + entry.getKey() + k_separador;
-                            valores_texto = valores_texto + k_separador + entry.getValue() + k_separador + "<br>";
+                            texto = entry.getValue();
+                            texto = texto.replace("&", "&amp;");
+                            texto = texto.replace("<", "&lt;");
+                            texto = texto.replace(">", "&gt;");
+                            valores_texto = valores_texto + k_separador + texto + k_separador + "<br>";
                         }
                         crear_formulario_leer_traduccion(claves_texto, valores_texto, ok);
                         if (ok.es == false) { return null; }
@@ -757,7 +762,7 @@ public class Operaciones_con_properties_web extends bases {
                     String claves_tex = valores_mapa.get(k_leer_traduccion_clave);
                     claves_tex = claves_tex.replace(k_separador + k_separador, k_separador);
                     String [] claves_array = claves_tex.split(k_separador);
-                    traduccion_tex = traduccion_tex.replace(k_separador + "\r\n", k_separador);
+                    traduccion_tex = traduccion_tex.replaceAll(k_separador + "[\r\n ]+", k_separador);
                     traduccion_tex = traduccion_tex.replace(k_separador + k_separador, k_separador);
                     String [] traducciones_array = traduccion_tex.split(k_separador);
                     String texto = "";
@@ -791,6 +796,12 @@ public class Operaciones_con_properties_web extends bases {
                             clave = clave.replace(" ", "\\ ");
                             clave = clave.replace(":", "\\:");
                             clave = clave.replace("=", "\\=");
+                            clave = clave.replace("&", "&amp;");
+                            clave = clave.replace("<", "&lt;");
+                            clave = clave.replace(">", "&gt;");
+                            valor = valor.replace("&", "&amp;");
+                            valor = valor.replace("<", "&lt;");
+                            valor = valor.replace(">", "&gt;");
                             texto = texto 
                               + clave + "=" 
                               +  valor + "<br>";
